@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Step Route Generator</title>
+    <link href='https://api.mapbox.com/mapbox-gl-js/v2.3.1/mapbox-gl.css' rel='stylesheet' />
+    <link href='style.css' rel='stylesheet' />
+</head>
+<body>
+    <input type="number" id="stepsInput" placeholder="Enter steps">
+    <button onclick="generateRoute()">Generate Route</button>
+    <div id="map" style="width: 100%; height: 400px;"></div>
+
+    <script src='https://api.mapbox.com/mapbox-gl-js/v2.3.1/mapbox-gl.js'></script>
+    <script src="app.js"></script>
+</body>
+</html>
