@@ -1,18 +1,43 @@
+mapboxgl.accessToken = 'pk.eyJ1IjoiYWRyaWFubWFydGVuIiwiYSI6ImNsdTN3aWxweTA1N3Uyam1nc3k2M2J4aXIifQ.-ZZy6VicYz_i2MfOqCO2hQ';
+
+let map; // Define global map variable to be initialized after user's location is obtained
+
+function convertStepsToDistance(steps) {
+    return steps / 1250; // Convert steps to kilometers
+}
+
+// Function to initialize the map centered on the user's location
+function initMap(longitude, latitude) {
+    map = new mapboxgl.Map({
+        container: 'map',
+        style: 'mapbox://styles/mapbox/streets-v11',
+        center: [longitude, latitude],
+        zoom: 14
+    });
+}
+
+// Attempt to obtain the user's current position and initialize the map with it
+if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(position => {
+        initMap(position.coords.longitude, position.coords.latitude);
+    }, () => {
+        console.error("Geolocation is supported, but it failed");
+        // Fallback location if geolocation fails
+        initMap(-74.0066, 40.7135); // Example: New York City
+    });
+} else {
+    console.error("Geolocation is not supported by this browser.");
+    // Fallback location if geolocation is not supported
+    initMap(-74.0066, 40.7135);
+}
+
 function generateRoute() {
     const steps = parseInt(document.getElementById('stepsInput').value);
-    const distanceKm = convertStepsToDistance(steps); // Convert steps to kilometers
+    const distanceKm = convertStepsToDistance(steps);
     const userPosition = map.getCenter();
 
-    // Simplification: Assume each step is approximately 0.0008 kilometers.
-    // Calculate a rough destination point directly east (longitude) for simplicity.
-    // This is a very basic approximation and should be adjusted based on your application's accuracy needs.
-    const destination = [userPosition.lng + (0.0008 * steps / 1000), userPosition.lat];
-
-    // Remove previous route from the map if it exists
-    if (map.getLayer('route')) {
-        map.removeLayer('route');
-        map.removeSource('route');
-    }
+    // Placeholder: Logic to calculate a destination point should be implemented here
+    const destination = [userPosition.lng + 0.01, userPosition.lat + 0.01];
 
     // Construct a request to the Mapbox Directions API
     const directionsRequest = `https://api.mapbox.com/directions/v5/mapbox/walking/${userPosition.lng},${userPosition.lat};${destination[0]},${destination[1]}?geometries=geojson&access_token=${mapboxgl.accessToken}`;
@@ -24,19 +49,17 @@ function generateRoute() {
             if (data.routes.length > 0) {
                 const route = data.routes[0].geometry;
                 // Display the route on the map
-                map.addSource('route', {
-                    type: 'geojson',
-                    data: {
-                        type: 'Feature',
-                        properties: {},
-                        geometry: route
-                    }
-                });
-
                 map.addLayer({
                     id: 'route',
                     type: 'line',
-                    source: 'route',
+                    source: {
+                        type: 'geojson',
+                        data: {
+                            type: 'Feature',
+                            properties: {},
+                            geometry: route
+                        }
+                    },
                     layout: {
                         'line-join': 'round',
                         'line-cap': 'round'
